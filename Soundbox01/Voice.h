@@ -12,8 +12,8 @@ public:
 	Voice(const Voice&) = delete; // copy constructor
 	Voice& operator=(const Voice&) = delete; // copy assignment
 	void SetVolume(FLOAT newValue);
-	FLOAT GetVolume();
-	void LoadWave();
+	FLOAT GetVolume() const;
+	static void LoadWave();
 	void FlushSourceBuffers();
 	void SubmitSourceBuffer(void* data);
 };

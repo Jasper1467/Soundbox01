@@ -5,10 +5,11 @@ namespace tretton63
 	constexpr int Convert(const char* szText)
 	{
 		int result{};
-		char* ptr = const_cast<char*>(szText);
-		do {
-			result += '0' - *ptr;
-		} while (*ptr != '\0');
+		const char* ptr = szText;
+		while (*ptr != '\0') {
+			result = result * 10 + (*ptr - '0');
+			++ptr;
+		}
 		return result;
 	}
 
@@ -26,7 +27,7 @@ namespace tretton63
 			}
 			Offset += sizeof(uint32_t);
 			Search = 0;
-		} while (!Found || Offset > FileSize);
+		} while (!Found && Offset <= FileSize);
 		return Offset;
 	}
 
@@ -58,11 +59,12 @@ namespace tretton63
 
 		std::unique_ptr<WAVEDATA> Result = std::make_unique<WAVEDATA>();
 
-		HANDLE SoundFile = CreateFile(Filename.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-		DWORD dwError = GetLastError();
+		const HANDLE SoundFile = CreateFile(Filename.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		const DWORD dwError = GetLastError();
 		if (dwError == ERROR_FILE_NOT_FOUND)
 		{
 			OutputDebugString(L"File not found\n");
+			CloseHandle(SoundFile);
 			return {};
 		}
 
@@ -74,7 +76,7 @@ namespace tretton63
 
 			OutputDebugStringW(L"Opened SoundFile\n");
 			LPVOID View = nullptr;
-			HANDLE SoundFileMapping = CreateFileMapping(SoundFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
+			const HANDLE SoundFileMapping = CreateFileMapping(SoundFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
 
 			if (SoundFileMapping)
 			{
@@ -84,11 +86,11 @@ namespace tretton63
 				View = MapViewOfFile(SoundFileMapping, FILE_MAP_READ, 0, 0, 0);
 				if (View)
 				{
-					size_t WaveChunkOffset = FindChunk(Wave, (uint8_t*)View, 0, SoundFileSize.QuadPart);
-					size_t FmtChunkOffset = FindChunk(Fmt, (uint8_t*)View, WaveChunkOffset, SoundFileSize.QuadPart);
-					uint32_t FmtChunkSize = ReadChunkAt<uint32_t>((uint8_t*)View, FmtChunkOffset + sizeof(uint32_t));
-					size_t DataChunkOffset = FindChunk(Data, (uint8_t*)View, FmtChunkOffset, SoundFileSize.QuadPart);
-					uint32_t DataChunkSize = ReadChunkAt<uint32_t>((uint8_t*)View, DataChunkOffset + sizeof(uint32_t));
+					const size_t WaveChunkOffset = FindChunk(Wave, (uint8_t*)View, 0, SoundFileSize.QuadPart);
+					const size_t FmtChunkOffset = FindChunk(Fmt, (uint8_t*)View, WaveChunkOffset, SoundFileSize.QuadPart);
+					const uint32_t FmtChunkSize = ReadChunkAt<uint32_t>((uint8_t*)View, FmtChunkOffset + sizeof(uint32_t));
+					const size_t DataChunkOffset = FindChunk(Data, (uint8_t*)View, FmtChunkOffset, SoundFileSize.QuadPart);
+					const uint32_t DataChunkSize = ReadChunkAt<uint32_t>((uint8_t*)View, DataChunkOffset + sizeof(uint32_t));
 
 					Result->WaveSize = DataChunkSize;
 					WaveFormatEx->cbSize = FmtChunkSize;

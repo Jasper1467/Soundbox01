@@ -9,13 +9,13 @@ namespace tretton63
 		std::vector<std::wstring> Result{};
 		std::wstring Foo{};
 		Foo += L"\\\\?\\";
-		Foo += Path.c_str();
+		Foo += Path;
 		Foo += L"\\*";
 
-		HANDLE MyFile = FindFirstFileW(Foo.c_str(), &FindBlock);
+		const HANDLE MyFile = FindFirstFileW(Foo.c_str(), &FindBlock);
 		if (MyFile == nullptr)
 		{
-			DWORD dwError = GetLastError();
+			const DWORD dwError = GetLastError();
 			wchar_t Buf[64] = { 0 };
 			wsprintf(Buf, L"Error %x\n", dwError);
 			OutputDebugString(Buf);

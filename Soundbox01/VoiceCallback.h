@@ -16,28 +16,28 @@ public:
 
 	}
 
-	void OnStreamEnd() noexcept
+	void OnStreamEnd() noexcept override
 	{
 		OutputDebugStringW(L"Stream ended\n");
 		SendMessage(m_hwnd, WM_CM_STREAM_ENDED, 0, 0);
 	}
-	void OnVoiceProcessingPassStart(UINT32 BytesRequired) noexcept
+	void OnVoiceProcessingPassStart(UINT32 BytesRequired) noexcept override
 	{
 		// INFO: never ending stream of output OutputDebugStringW(L"OnVoiceProcessingPassStart\n");
 	}
-	void OnVoiceProcessingPassEnd() noexcept
+	void OnVoiceProcessingPassEnd() noexcept override
 	{
 		// INFO: never ending stream of output  OutputDebugStringW(L"OnVoiceProcessingPassEnd\n");
 	}
-	void OnBufferEnd(void* pContext) noexcept
+	void OnBufferEnd(void* pContext) noexcept override
 	{
 		OutputDebugStringW(L"OnBufferEnd\n");
 	}
-	void OnBufferStart(void* pContext)noexcept
+	void OnBufferStart(void* pContext)noexcept override
 	{
 		OutputDebugStringW(L"OnBufferStart\n");
 	}
-	void OnLoopEnd(void* pContext)noexcept {}
-	void OnVoiceError(void* pContext, HRESULT Error) noexcept {}
+	void OnLoopEnd(void* pContext)noexcept override {}
+	void OnVoiceError(void* pContext, HRESULT Error) noexcept override {}
 };
 
